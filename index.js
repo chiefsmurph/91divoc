@@ -1,83 +1,164 @@
+const USE_CURRENT_HIGHEST_AND_LOWEST = true;
+const USE_JSON = true;
+const NUM_PER_SUBSET = 5;
+
+
 const request = require('axios');
-const { pick, omit, mapObject } = require('underscore');
+const { omit, mapObject, uniq } = require('underscore');
 const avg = array => {
-    array = array.filter(Boolean);
-    return array.reduce((acc, val) => acc + val, 0) / array.length;
+    const arr = array.filter(Boolean);
+    return arr.reduce((acc, val) => acc + val, 0) / arr.length;
 };
 
 
 const requiredFields = [
     'total_cases_per_million', 'total_deaths_per_million', 'total_vaccinations_per_hundred'
 ];
-const hasRequiredFields = d => requiredFields.every(key => d[key]);
+const hasRequiredFields = d => requiredFields.every(key => d[key] !== undefined);
 
 
-const getAggregatesForDate = (withVaccinationTotals, date) => {
-    const slicedVaccinationTotals = withVaccinationTotals.map(({ data, ...p }) => {
-        const relevantData = [...data].reverse().find(d => (new Date(d.date)).getTime() <= (new Date(date)).getTime());
-        // if (!relevantData) {
-        //     console.log('no relevant');
-        //     console.log({
-        //         date,
-        //         data
-        //     })
-        // }
-        return {
-            ...p,
-            ...relevantData
-        };
-    }).filter(hasRequiredFields);
+const getHighestLowest = ({ 
+    withVaccinationTotals,
+    date,
+    highestVaccinatedLocations = [],
+    lowestVaccinatedLocations = [],
+}) => {
 
-    const highestVaccinated = [...slicedVaccinationTotals].sort((a, b) => b.total_vaccinations_per_hundred - a.total_vaccinations_per_hundred);
-    const lowestVaccinated = [...slicedVaccinationTotals].sort((a, b) => a.total_vaccinations_per_hundred - b.total_vaccinations_per_hundred);
+    const slicedVaccinationTotals = getAggregatesForDate({
+        withVaccinationTotals,
+        date,
+    });
+    
+    // console.log({ withVaccinationTotals, slicedVaccinationTotals })
+    const highestVaccinated = highestVaccinatedLocations.length
+        ? highestVaccinatedLocations.map(location => slicedVaccinationTotals.find(p => p.location === location)).filter(Boolean)
+        : [...slicedVaccinationTotals].sort((a, b) => b.total_vaccinations_per_hundred - a.total_vaccinations_per_hundred).slice(0, NUM_PER_SUBSET);
+    const lowestVaccinated = lowestVaccinatedLocations.length
+        ? lowestVaccinatedLocations.map(location => slicedVaccinationTotals.find(p => p.location === location)).filter(Boolean)
+        : [...slicedVaccinationTotals].sort((a, b) => a.total_vaccinations_per_hundred - b.total_vaccinations_per_hundred).slice(0, NUM_PER_SUBSET);
 
+    console.log({
+        date,
+        highestVaccinated: highestVaccinated.map(t => t.location),
+        lowestVaccinated: lowestVaccinated.map(t => t.location),
+    });
     return mapObject({
         highestVaccinated,
-        lowestVaccinated
-    }, sorted => {
-
-        const top = sorted.slice(0, 30);
-        return [
+        lowestVaccinated,
+    }, subset => 
+        [
             'total_vaccinations_per_hundred',
             'total_cases_per_million',
             'total_deaths_per_million'
         ].reduce((acc, key) => ({
             ...acc,
-            [key]: Math.round(avg(top.map(d => d[key])))
+            [key]: +avg(subset.map(d => d[key])).toFixed(1)
         }), {
-            locations: top.map(t => t.location)
+            locations: subset.map(t => t.location)
         })
+    );
+};
 
-    });
+const getAggregatesForDate = ({
+    withVaccinationTotals,
+    date,
+}) => {
+    
+    let slicedVaccinationTotals = withVaccinationTotals
+        .map(({ data, ...p }) => ({
+            ...p,
+            ...[...data].reverse().find(d => (new Date(d.date)).getTime() <= (new Date(date)).getTime())
+        }))
+        .filter(hasRequiredFields)
+        .sort((a, b) => b.total_vaccinations_per_hundred - a.total_vaccinations_per_hundred);
+
+    return slicedVaccinationTotals;
+
 };
 
 
+
 (async () => {
-    const { data: covidData } = await request('https://covid.ourworldindata.org/data/owid-covid-data.json');
+    console.log('request data...', typeof require('./owid-covid-data.json'), Object.keys(require('./owid-covid-data.json')));
+
+    const covidData = USE_JSON
+            ? require('./owid-covid-data.json')
+            : (await request('https://covid.ourworldindata.org/data/owid-covid-data.json')).data;
     // const { data: vaccinationsData } = await request('https://covid.ourworldindata.org/data/vaccinations/vaccinations.json');
 
+    console.log({ USE_CURRENT_HIGHEST_AND_LOWEST})
+    const withVaccinationTotals = Object.keys(covidData)
+        .map(iso_code => {
+            const { location, data, ...rest } = covidData[iso_code];
+            // console.log({ location, data, iso_code });
+            // const withTotals = data.filter(({ total_vaccinations_per_hundred }) => total_vaccinations_per_hundred);
+            // const mostRecentTotal = withTotals.pop();
+            const importantData = data.filter(hasRequiredFields);
+            return {
+                iso_code,
+                location,
+                locationData: rest,
+                data: importantData,
+            };
+        })
+        // .filter(location => {
+        //     return true//location.locationData.population < 1000000;
+        //     return location.locationData.continent === 'North America';
+        //     console.log({ location})
+        //     return true;
+        // });
 
-    const withVaccinationTotals = Object.keys(covidData).map(iso_code => {
-        const { location, data } = covidData[iso_code];
-        // console.log({ location, data, iso_code });
-        // const withTotals = data.filter(({ total_vaccinations_per_hundred }) => total_vaccinations_per_hundred);
-        // const mostRecentTotal = withTotals.pop();
-        const importantData = data.filter(hasRequiredFields);
-        return {
-            iso_code,
-            location,
-            data: importantData,
-        };
+    console.log("TOTAL LOCATIONS", withVaccinationTotals.length);
+
+
+    const allDates = uniq(withVaccinationTotals.map(t => t.data.map(t => t.date)).flat(2))
+        .sort((a, b) => (new Date(a)).getTime() - (new Date(b)).getTime());
+    console.log({ allDates })
+    // TEMP
+    const mostRecentDate = allDates[allDates.length - 1];
+    console.log(`NOW LETS GET THE CURRENT HIGHEST AND LOWEST LOCATIONS FOR ${mostRecentDate}`);
+    const mostRecentAggs = getAggregatesForDate({
+        withVaccinationTotals, 
+        date: mostRecentDate
     });
 
-    const allDates = withVaccinationTotals.find(t => t.iso_code === 'ISR').data.map(t => t.date);
+    console.log({ mostRecentAggs })
 
 
+    let currentHighestLowest = USE_CURRENT_HIGHEST_AND_LOWEST && (() => {
+        const mostRecentDate = allDates[allDates.length - 1];
+        console.log(`NOW LETS GET THE CURRENT HIGHEST AND LOWEST LOCATIONS FOR ${mostRecentDate}`);
+        const mostRecentAggs = getHighestLowest({
+            withVaccinationTotals, 
+            date: mostRecentDate
+        });
+        console.log(JSON.stringify(mostRecentAggs, null, 2))
+        const {
+            highestVaccinated: {
+                locations: highestVaccinatedLocations
+            },
+            lowestVaccinated: {
+                locations: lowestVaccinatedLocations
+            }
+        } = mostRecentAggs;
+        // console.log({ mostRecentAggs })
+        const highestLowest = {
+            highestVaccinatedLocations,
+            lowestVaccinatedLocations
+        };
+        console.log('GOT THE CURRENT HIGHEST VACCINATED AND LOWEST VACCINATED LOCATIONS');
+        console.log(highestLowest)
+        return highestLowest;
+    })();
 
 
     const withAggregates = allDates.map(date => ({
         date,
-        aggregates: getAggregatesForDate(withVaccinationTotals, date)
+        aggregates: getHighestLowest({
+            withVaccinationTotals,
+            date,
+            ...currentHighestLowest
+        })
     }));
 
 
@@ -88,63 +169,25 @@ const getAggregatesForDate = (withVaccinationTotals, date) => {
             [`${prefix}${key}`]: object[key]
         }), {});
 
-    const formatted = withAggregates.map(({ 
-        date, 
-        aggregates: { 
-            highestVaccinated,
-            lowestVaccinated,
-        }
-    }) => ({
-        date,
-        ...prefixKeys(omit(highestVaccinated, 'locatiodns'), 'highestVaccinated_'),
-        ...prefixKeys(omit(lowestVaccinated, 'locatidons'), 'lowestVaccinated_'),
-    }));
-
-
-
-
-
+    const formatted = withAggregates
+        .map(({ 
+            date, 
+            aggregates: { 
+                highestVaccinated,
+                lowestVaccinated,
+            }
+        }) => ({
+            date,
+            ...prefixKeys(highestVaccinated, 'highestVaccinated_'),
+            ...prefixKeys(lowestVaccinated, 'lowestVaccinated_'),
+        }))
+        .map(({ highestVaccinated_locations, lowestVaccinated_locations, ...rest }) => ({
+            ...rest,
+            highestVaccinated_locations: highestVaccinated_locations.join(', '),
+            lowestVaccinated_locations: lowestVaccinated_locations.join(', '),
+        }));
 
 
     console.log(JSON.stringify({ formatted }, null, 2));
     
-    // const highestVaccinated = [...withVaccinationTotals].sort((a, b) => b.mostRecentTotalVaccinationsPerHundred - a.mostRecentTotalVaccinationsPerHundred);
-    // const lowestVaccinated = [...withVaccinationTotals].sort((a, b) => a.mostRecentTotalVaccinationsPerHundred - b.mostRecentTotalVaccinationsPerHundred);
-
-    // const addCovidData = vaccinated =>
-    //     vaccinated.map(p => ({
-    //         ...p,
-    //         covidData: ((covidData[p.iso_code] || {}).data || []).pop()
-    //     }))
-    //     .map(p => ({
-    //         ...p,
-    //         ...pick(p.covidData, ['total_cases_per_million', 'total_deaths_per_million'])
-    //     }))
-    //     .map(p => ({
-    //         ...pick(p, ['country', 'iso_code', 'mostRecentTotalVaccinationsPerHundred']),
-    //         ...pick(p.covidData, ['total_cases_per_million', 'total_deaths_per_million'])
-    //     }));
-
-    // // console.log('total', highestVaccinated.length)
-
-    // [highestVaccinated, lowestVaccinated]
-    //     .map(data => data.slice(0, 100))
-    //     .map(addCovidData)
-    //     .forEach(data => {
-    //         console.log(
-    //             'averages', 
-    //             [
-    //                 'mostRecentTotalVaccinationsPerHundred',
-    //                 'total_cases_per_million',
-    //                 'total_deaths_per_million'
-    //             ].reduce((acc, key) => ({
-    //                 ...acc,
-    //                 [key]: avg(data.map(d => d[key]))
-    //             }), {})
-    //         )
-    //         console.table(data);
-    //     });
-
-
-    // console.log(JSON.stringify({ highestVaccinated: addCovidData(highestVaccinated), lowestVaccinated: addCovidData(lowestVaccinated) }, null, 2));//.map(p => p.country)});
 })();
