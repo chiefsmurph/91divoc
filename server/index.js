@@ -1,5 +1,5 @@
 const USE_CURRENT_HIGHEST_AND_LOWEST = false;
-const USE_JSON = true;
+const USE_JSON = false;
 const NUM_PER_SUBSET = 25;
 
 
@@ -83,7 +83,7 @@ const getAggregatesForDate = ({
     console.log('request data...');
 
     const covidData = USE_JSON
-            ? require('./owid-covid-data.json')
+            ? require('./data/owid-covid-data.json')
             : (await request('https://covid.ourworldindata.org/data/owid-covid-data.json')).data;
     // const { data: vaccinationsData } = await request('https://covid.ourworldindata.org/data/vaccinations/vaccinations.json');
     console.log(JSON.stringify(covidData, null, 2))
