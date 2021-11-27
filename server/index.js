@@ -80,7 +80,7 @@ const getAggregatesForDate = ({
 
 
 (async () => {
-    console.log('request data...', typeof require('./owid-covid-data.json'), Object.keys(require('./owid-covid-data.json')));
+    console.log('request data...');
 
     const covidData = USE_JSON
             ? require('./owid-covid-data.json')
@@ -90,7 +90,7 @@ const getAggregatesForDate = ({
     console.log({ USE_CURRENT_HIGHEST_AND_LOWEST});
 
     await fs.writeFile(
-        './owid-covid-data2.json',
+        './data/owid-covid-data2.json',
         JSON.stringify(covidData, null, 2)
     );
     const withVaccinationTotals = Object.keys(covidData)
