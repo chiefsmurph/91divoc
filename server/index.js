@@ -1,10 +1,11 @@
-const USE_CURRENT_HIGHEST_AND_LOWEST = true;
+const USE_CURRENT_HIGHEST_AND_LOWEST = false;
 const USE_JSON = true;
-const NUM_PER_SUBSET = 5;
+const NUM_PER_SUBSET = 25;
 
 
 const request = require('axios');
-const { omit, mapObject, uniq } = require('underscore');
+const fs = require('fs/promises');
+const { mapObject, uniq } = require('underscore');
 const avg = array => {
     const arr = array.filter(Boolean);
     return arr.reduce((acc, val) => acc + val, 0) / arr.length;
@@ -85,8 +86,13 @@ const getAggregatesForDate = ({
             ? require('./owid-covid-data.json')
             : (await request('https://covid.ourworldindata.org/data/owid-covid-data.json')).data;
     // const { data: vaccinationsData } = await request('https://covid.ourworldindata.org/data/vaccinations/vaccinations.json');
+    console.log(JSON.stringify(covidData, null, 2))
+    console.log({ USE_CURRENT_HIGHEST_AND_LOWEST});
 
-    console.log({ USE_CURRENT_HIGHEST_AND_LOWEST})
+    await fs.writeFile(
+        './owid-covid-data2.json',
+        JSON.stringify(covidData, null, 2)
+    );
     const withVaccinationTotals = Object.keys(covidData)
         .map(iso_code => {
             const { location, data, ...rest } = covidData[iso_code];
@@ -101,12 +107,14 @@ const getAggregatesForDate = ({
                 data: importantData,
             };
         })
-        // .filter(location => {
-        //     return true//location.locationData.population < 1000000;
-        //     return location.locationData.continent === 'North America';
-        //     console.log({ location})
-        //     return true;
-        // });
+        .filter(location => location.locationData.continent)
+        .filter(location => {
+            // return true
+            // return location.locationData.population < 1000000;
+            return !JSON.stringify(location).includes('Africa');
+            console.log({ location})
+            return true;
+        });
 
     console.log("TOTAL LOCATIONS", withVaccinationTotals.length);
 
