@@ -1,5 +1,5 @@
 const USE_CURRENT_HIGHEST_AND_LOWEST = false;
-const USE_JSON = false;
+const USE_JSON = true;
 const NUM_PER_SUBSET = 25;
 
 
@@ -84,7 +84,7 @@ module.exports = async () => {
             ? require('./data/owid-covid-data.json')
             : (await request('https://covid.ourworldindata.org/data/owid-covid-data.json')).data;
     // const { data: vaccinationsData } = await request('https://covid.ourworldindata.org/data/vaccinations/vaccinations.json');
-    console.log(JSON.stringify(covidData, null, 2))
+    // console.log(JSON.stringify(covidData, null, 2))
     console.log({ USE_CURRENT_HIGHEST_AND_LOWEST});
 
     await fs.writeFile(
@@ -106,9 +106,9 @@ module.exports = async () => {
             };
         })
         .filter(location => location.locationData.continent)
-        .filter(location => location.locationData.population > 5000000)
+        // .filter(location => location.locationData.population > 5000000)
         .filter(location => {
-            return !JSON.stringify(location).includes('Africa');
+            // return !JSON.stringify(location).includes('Africa');
             console.log({ location})
             return true;
         });

@@ -28,5 +28,7 @@ io.on('connection', async client => {
     const userAgent = client.request.headers['user-agent'];
     console.log(`new connection: ${ip} (${userAgent}`);
 
-    client.on('getHighestLowest', getHighestLowest);
+    client.on('getHighestLowest', async cb => {
+        cb(await getHighestLowest());
+    });
 });
