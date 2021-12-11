@@ -2,7 +2,13 @@
 import './App.css';
 import GraphSection from './GraphSection';
 
+import ReactGA from 'react-ga';
+
 import socketIOClient from "socket.io-client";
+
+const TRACKING_ID = "UA-131761952-2";
+ReactGA.initialize(TRACKING_ID);
+
 const socketEndpoint = origin.includes('localhost') && false ? 'http://localhost:3000' : `https://chiefsmurph.com`;
 const socket = socketIOClient(socketEndpoint, {
   path: '/91divoc-server/socket.io',
@@ -16,10 +22,10 @@ function App() {
       <header className="App-header">
         91divoc
       </header>
-      <GraphSection 
+      <GraphSection
+        socket={socket}
         title="World Locations" 
-        socket={socket} 
-        socketMethod={'getHighestLowestWorld'}
+        socketMethod="getHighestLowestWorld"
         sources={[
           {
             url: 'https://github.com/owid/covid-19-data/tree/master/public/data',
@@ -27,10 +33,10 @@ function App() {
           }
         ]}
       />
-      <GraphSection 
-        title="United States" 
+      <GraphSection
         socket={socket} 
-        socketMethod={'getHighestLowestStates'}
+        title="United States"
+        socketMethod="getHighestLowestStates"
         sources={[
           {
             url: 'https://github.com/owid/covid-19-data/blob/1beec66a5fa9900f1953a94e4a5f4b8dc07cd279/public/data/vaccinations/README.md#united-states-vaccination-data',
