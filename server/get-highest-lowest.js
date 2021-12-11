@@ -1,10 +1,9 @@
 const USE_CURRENT_HIGHEST_AND_LOWEST = false;
-const USE_JSON = true;
 const NUM_PER_SUBSET = 25;
 
+const getVaccinationTotals = require('./get-vaccination-totals');
+const hasRequiredFields = require('./has-required-fields');
 
-const request = require('axios');
-const fs = require('fs/promises');
 const { mapObject, uniq } = require('underscore');
 const avg = array => {
     const arr = array.filter(Boolean);
@@ -12,10 +11,6 @@ const avg = array => {
 };
 
 
-const requiredFields = [
-    'total_cases_per_million', 'total_deaths_per_million', 'total_vaccinations_per_hundred'
-];
-const hasRequiredFields = d => requiredFields.every(key => d[key] !== undefined);
 
 
 const getHighestLowest = ({ 
@@ -78,40 +73,11 @@ const getAggregatesForDate = ({
 };
 
 module.exports = async () => {
-    console.log('request data...');
-
-    const covidData = USE_JSON
-            ? require('./data/owid-covid-data.json')
-            : (await request('https://covid.ourworldindata.org/data/owid-covid-data.json')).data;
-    // const { data: vaccinationsData } = await request('https://covid.ourworldindata.org/data/vaccinations/vaccinations.json');
-    // console.log(JSON.stringify(covidData, null, 2))
     console.log({ USE_CURRENT_HIGHEST_AND_LOWEST});
 
-    await fs.writeFile(
-        './data/owid-covid-data2.json',
-        JSON.stringify(covidData, null, 2)
-    );
-    const withVaccinationTotals = Object.keys(covidData)
-        .map(iso_code => {
-            const { location, data, ...rest } = covidData[iso_code];
-            // console.log({ location, data, iso_code });
-            // const withTotals = data.filter(({ total_vaccinations_per_hundred }) => total_vaccinations_per_hundred);
-            // const mostRecentTotal = withTotals.pop();
-            const importantData = data.filter(hasRequiredFields);
-            return {
-                iso_code,
-                location,
-                locationData: rest,
-                data: importantData,
-            };
-        })
-        .filter(location => location.locationData.continent)
-        // .filter(location => location.locationData.population > 5000000)
-        .filter(location => {
-            // return !JSON.stringify(location).includes('Africa');
-            console.log({ location})
-            return true;
-        });
+    console.log('request data...');
+
+    const withVaccinationTotals = await getVaccinationTotals();
 
     console.log("TOTAL LOCATIONS", withVaccinationTotals.length);
 
