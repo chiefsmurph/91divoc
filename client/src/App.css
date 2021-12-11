@@ -52,6 +52,14 @@
   padding: 0 1em;
 }
 
+.numberOfVisits {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  color: white;
+  font-size: 110%;
+}
+
 h2 {
   background-color: black;
   color: white;
