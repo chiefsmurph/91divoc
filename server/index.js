@@ -26,8 +26,8 @@ const io = SocketIO(server, {
     }
 });
 
-app.get('/state-data.json', (req, res) => res.json(await getStateData()));
-app.get('/world-data.json', (req, res) => res.json(await getWorldData()));
+app.get('/state-data.json', async (req, res) => res.json(await getStateData()));
+app.get('/world-data.json', async (req, res) => res.json(await getWorldData()));
 
 
 const intervalCache = (asyncFn, refreshInterval = 60) => {
