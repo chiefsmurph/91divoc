@@ -5,7 +5,7 @@ import GraphSection from './GraphSection';
 import ReactGA from 'react-ga';
 
 import socketIOClient from "socket.io-client";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const TRACKING_ID = "UA-131761952-2";
 ReactGA.initialize(TRACKING_ID);
