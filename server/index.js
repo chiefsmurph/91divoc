@@ -1,5 +1,6 @@
 const port = process.env.PORT || 3000;
 
+const fs = require('fs/promises');
 const express = require('express');
 const SocketIO = require('socket.io');
 const app = express();
@@ -46,6 +47,14 @@ const intervalCache = (asyncFn, refreshInterval = 60) => {
 const cachedWorld = intervalCache(getHighestLowestWorld, 60);
 const cachedStates = intervalCache(getHighestLowestStates, 110);
 
+const increaseAndUpdateCounter = async () => {
+    const file = './data/number-of-visits.json';
+    const current = require(file);
+    const next = current + 1;
+    await fs.writeFile(file, next);
+    return next;
+};
+
 io.on('connection', async client => {
     const ip = (client.handshake.headers['x-forwarded-for'] || client.handshake.address.address || '').split(',')[0];
     const userAgent = client.request.headers['user-agent'];
@@ -59,4 +68,6 @@ io.on('connection', async client => {
     client.on('getHighestLowestStates', async cb => {
         cb(cachedStates());
     });
+
+    io.emit('counter', await increaseAndUpdateCounter());
 });

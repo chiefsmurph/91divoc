@@ -5,6 +5,7 @@ import GraphSection from './GraphSection';
 import ReactGA from 'react-ga';
 
 import socketIOClient from "socket.io-client";
+import { useEffect } from 'react';
 
 const TRACKING_ID = "UA-131761952-2";
 ReactGA.initialize(TRACKING_ID);
@@ -17,8 +18,15 @@ const socket = socketIOClient(socketEndpoint, {
 });
 
 function App() {
+  const [numberOfVisits, setNumberofVisits] = useState(null);
+  useEffect(() => {
+    socket.on('counter', setNumberofVisits);
+  }, []);
   return (
     <div className="App">
+      {numberOfVisits && <span className="numberOfVisits">
+        numberOfVisits: {numberOfVisits}
+      </span>}
       <header className="App-header">
         91divoc
       </header>
