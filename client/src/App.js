@@ -5,7 +5,7 @@ import GraphSection from './GraphSection';
 import socketIOClient from "socket.io-client";
 const socketEndpoint = origin.includes('localhost') && true ? 'http://localhost:3000' : `https://chiefsmurph.com`;
 const socket = socketIOClient(socketEndpoint, {
-  path: '/socket.io',
+  path: '/91divoc-server/socket.io',
   secure: true,
   transports: ['websocket']
 });
