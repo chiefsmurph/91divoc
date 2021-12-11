@@ -50,6 +50,7 @@ const cachedStates = intervalCache(getHighestLowestStates, 110);
 const increaseAndUpdateCounter = async () => {
     const file = './data/number-of-visits.json';
     const current = require(file);
+    console.log({ current})
     const next = Number(current) + 1;
     await fs.writeFile(file, JSON.stringify(next));
     return next;
