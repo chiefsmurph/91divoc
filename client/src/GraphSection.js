@@ -4,6 +4,7 @@ import { useState, useEffect} from 'react';
 
 import { Line } from 'react-chartjs-2';
 
+import ReactGA from 'react-ga';
 
 import {
   Chart as ChartJS,
@@ -83,6 +84,7 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
     } = highestLowest[highestLowest.length - 1];
     const numHighest = highestVaccinated_locations.split(',').length;
     const numLowest = lowestVaccinated_locations.split(',').length;
+    const friendlyJson = jsonUrl.split('/').pop();
     return (
         <div className="graph-section">
             <h2>
@@ -92,7 +94,7 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
                     source{sources.length > 1 ? 's' : ''}:&nbsp;
                     {sources.map(({ url, name }) => <a href={url} target="_blank">{name}</a>)}
                 </span>
-                <pre><a href={jsonUrl}>⬇ {jsonUrl}</a></pre>
+                <pre><a href={jsonUrl} onClick={() => ReactGA.event({ category: 'User', action: `Downloaded ${friendlyJson}`})}>⬇ {friendlyJson}</a></pre>
             </h2>
             {
                 highestLowest && (

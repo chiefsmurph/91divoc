@@ -32,7 +32,7 @@ function App() {
             name: 'Our World In Data (OWID)'
           }
         ]}
-        jsonUrl="world-data.json"
+        jsonUrl="https://chiefsmurph.com/91divoc-server/world-data.json"
       />
       <GraphSection
         socket={socket} 
@@ -52,7 +52,7 @@ function App() {
             name: 'State Population: DataUSA.io'
           }
         ]}
-        jsonUrl="state-data.json"
+        jsonUrl="https://chiefsmurph.com/91divoc-server/state-data.json"
       />
     </div>
   );
