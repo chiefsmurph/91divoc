@@ -9,6 +9,9 @@ module.exports = async () => {
 
     console.log("TOTAL WORLD LOCATIONS", withVaccinationTotals.length);
 
-    return getHighestLowest(withVaccinationTotals);
+    return getHighestLowest({
+        withVaccinationTotals,
+        numPerSubset: 25
+    });
 
 };

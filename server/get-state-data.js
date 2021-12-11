@@ -103,9 +103,6 @@ const format = rawCombined =>
     Object.keys(rawCombined).map(
         state => {
             const { vaxData, outcomeData } = rawCombined[state];
-            console.log({ vaxData, outcomeData });
-            console.log('looking');
-
             return {
                 state,
                 location: state,

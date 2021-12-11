@@ -26,8 +26,9 @@ ChartJS.register(
   Legend
 );
 
-const colors = ['green', 'orange', 'blue', 'red', 'turquoise', 'magenta']
-function GraphSection({ title, socket, socketMethod }) {
+const colors = ['green', 'orange', 'blue', 'red', 'turquoise', 'magenta'];
+const chartOptions = { responsive: true, plugins: { legend: { labels: { font: { family: 'Montserrat' }}}} };
+function GraphSection({ title, socket, sources = [], socketMethod }) {
     const [socketData, setSocketData] = useState(null);
     const { highestLowest, totalLocations } = socketData || {};
     useEffect(() => {
@@ -76,31 +77,39 @@ function GraphSection({ title, socket, socketMethod }) {
         lowestVaccinated_total_cases_per_million,
         date: mostRecentDate
     } = highestLowest[highestLowest.length - 1];
+    const numHighest = highestVaccinated_locations.split(',').length;
+    const numLowest = lowestVaccinated_locations.split(',').length;
     return (
         <div className="graph-section">
             <h2>
                 {[totalLocations, title].join(' ')}<br/>
-                <i>last updated: {mostRecentDate}</i>
+                <i>last updated: {mostRecentDate}</i><br/>
+                <span>
+                    source{sources.length > 1 ? 's' : ''}:&nbsp;
+                    {sources.map(({ url, name }) => <a href={url} target="_blank">{name}</a>)}
+                </span>
             </h2>
             {
                 highestLowest && (
                 <>
                     <table width="100%" cellSpacing={0}>
                         <thead>
-                            <th>Highest Vaccinated</th>
-                            <th>Lowest Vaccinated</th>
+                            <th>{numHighest} Highest Vaccinated</th>
+                            <th>{numLowest} Lowest Vaccinated</th>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
-                                    {highestVaccinated_locations.split(',').slice(0, 5).join(', ')}...
+                                    {highestVaccinated_locations.split(',').slice(0, 7).join(', ')}
+                                    {numHighest > 7 ? '...' : ''}
                                     <hr/>
                                     Total Vaccinations / Hundred: {highestVaccinated_total_vaccinations_per_hundred}<br/>
                                     Total Cases / Million: {highestVaccinated_total_cases_per_million}<br/>
                                     Total Deaths / Million: {highestVaccinated_total_deaths_per_million}<br/>
                                 </td>
                                 <td>
-                                    {lowestVaccinated_locations.split(',').slice(0, 5).join(', ')}...
+                                    {lowestVaccinated_locations.split(',').slice(0, 7).join(', ')}
+                                    {numLowest > 7 ? '...' : ''}
                                     <hr/>
                                     Total Vaccinations / Hundred: {lowestVaccinated_total_vaccinations_per_hundred}<br/>
                                     Total Cases / Million: {lowestVaccinated_total_cases_per_million}<br/>
@@ -110,9 +119,9 @@ function GraphSection({ title, socket, socketMethod }) {
                         </tbody>
                     </table>
                     <div className="charts">
-                        <div><Line data={getChartData('cases')} options={{ responsive: true }} /></div>
-                        <div><Line data={getChartData('deaths')} options={{ responsive: true }}  /></div>
-                        <div><Line data={getChartData('total_vacc')} options={{ responsive: true }}  /></div>
+                        <div><Line data={getChartData('cases')} options={chartOptions} /></div>
+                        <div><Line data={getChartData('deaths')} options={chartOptions}  /></div>
+                        <div><Line data={getChartData('total_vacc')} options={chartOptions}  /></div>
                     </div>
                 </>
                 )

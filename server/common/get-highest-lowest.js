@@ -17,6 +17,7 @@ const getHighestLowest = ({
     date,
     highestVaccinatedLocations = [],
     lowestVaccinatedLocations = [],
+    numPerSubset,
 }) => {
 
     // console.log(
@@ -35,10 +36,10 @@ const getHighestLowest = ({
     // console.log({ withVaccinationTotals, slicedVaccinationTotals })
     const highestVaccinated = highestVaccinatedLocations.length
         ? highestVaccinatedLocations.map(location => slicedVaccinationTotals.find(p => p.location === location)).filter(Boolean)
-        : [...slicedVaccinationTotals].sort((a, b) => b.total_vaccinations_per_hundred - a.total_vaccinations_per_hundred).slice(0, NUM_PER_SUBSET);
+        : [...slicedVaccinationTotals].sort((a, b) => b.total_vaccinations_per_hundred - a.total_vaccinations_per_hundred).slice(0, numPerSubset);
     const lowestVaccinated = lowestVaccinatedLocations.length
         ? lowestVaccinatedLocations.map(location => slicedVaccinationTotals.find(p => p.location === location)).filter(Boolean)
-        : [...slicedVaccinationTotals].sort((a, b) => a.total_vaccinations_per_hundred - b.total_vaccinations_per_hundred).slice(0, NUM_PER_SUBSET);
+        : [...slicedVaccinationTotals].sort((a, b) => a.total_vaccinations_per_hundred - b.total_vaccinations_per_hundred).slice(0, numPerSubset);
 
     console.log({
         date,
@@ -79,11 +80,15 @@ const getAggregatesForDate = ({
 
 };
 
-module.exports = async (withVaccinationTotals) => {
+module.exports = async ({
+    withVaccinationTotals,
+    numPerSubset = NUM_PER_SUBSET
+}) => {
     console.log({ USE_CURRENT_HIGHEST_AND_LOWEST});
 
-    console.log('withVaccinationTotals');
-    console.log(withVaccinationTotals);
+    console.log('withVaccinationTotals total', withVaccinationTotals.length);
+    console.log('numPerSubset', numPerSubset);
+    // console.log(withVaccinationTotals);
 
 
     const allDates = uniq(withVaccinationTotals.map(t => t.data.map(t => t.date)).flat(2))
@@ -106,7 +111,8 @@ module.exports = async (withVaccinationTotals) => {
         console.log(`NOW LETS GET THE CURRENT HIGHEST AND LOWEST LOCATIONS FOR ${mostRecentDate}`);
         const mostRecentAggs = getHighestLowest({
             withVaccinationTotals, 
-            date: mostRecentDate
+            date: mostRecentDate,
+            numPerSubset
         });
         console.log(JSON.stringify(mostRecentAggs, null, 2))
         const {
@@ -133,6 +139,7 @@ module.exports = async (withVaccinationTotals) => {
         aggregates: getHighestLowest({
             withVaccinationTotals,
             date,
+            numPerSubset,
             ...currentHighestLowest
         })
     }));

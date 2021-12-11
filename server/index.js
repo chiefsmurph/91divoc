@@ -24,16 +24,34 @@ const io = SocketIO(server, {
     }
 });
 
+
+const intervalCache = (asyncFn, refreshInterval = 60) => {
+    let cachedVal;
+    const refreshCache = async () => {
+        console.log('INTERVAL CACHE REFRESHING');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        cachedVal = await asyncFn();
+    };
+    setInterval(refreshCache, refreshInterval * 1000 * 60);
+    refreshCache();
+    return () => cachedVal;
+};
+
+
+const cachedWorld = intervalCache(getHighestLowestWorld, 60);
+const cachedStates = intervalCache(getHighestLowestStates, 110);
+
 io.on('connection', async client => {
     const ip = (client.handshake.headers['x-forwarded-for'] || client.handshake.address.address || '').split(',')[0];
     const userAgent = client.request.headers['user-agent'];
     console.log(`new connection: ${ip} (${userAgent}`);
 
+
     client.on('getHighestLowestWorld', async cb => {
-        cb(await getHighestLowestWorld());
+        cb(cachedWorld());
     });
 
     client.on('getHighestLowestStates', async cb => {
-        cb(await getHighestLowestStates());
+        cb(cachedStates());
     });
 });
