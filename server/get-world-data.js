@@ -2,9 +2,9 @@ const USE_JSON = false;
 const request = require('axios');
 const fs = require('fs/promises');
 const hasRequiredFields = require('./common/has-required-fields');
+const cacheThis = require('./common/cache-this');
 
-
-module.exports = async () => {
+module.exports = cacheThis(async () => {
     const covidData = USE_JSON
         ? require('./data/owid-covid-data.json')
         : (await request('https://covid.ourworldindata.org/data/owid-covid-data.json')).data;
@@ -37,4 +37,4 @@ module.exports = async () => {
         });
 
     return withVaccinationTotals;
-};
+}, 80);

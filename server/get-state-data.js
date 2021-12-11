@@ -4,6 +4,7 @@ const fs = require('fs/promises');
 const csvToJson = require('csvtojson');
 const { groupBy, mapObject } = require('underscore');
 const hasRequiredFields = require('./common/has-required-fields');
+const cacheThis = require('./common/cache-this');
 
 const getStateTwoLetterToFull = async () => {
     // https://worldpopulationreview.com/static/states/abbr-name.json
@@ -73,7 +74,7 @@ const getStateData = (object, state = '') => {
 };
 
 
-module.exports = async () => {
+module.exports = cacheThis(async () => {
 
     const twoLetterToFull = await getStateTwoLetterToFull();
     const vaxData = await getVaxDataByState();
@@ -96,7 +97,7 @@ module.exports = async () => {
     const formattedByPopulation = await formatByPopulation(formatted);
     console.log(formattedByPopulation.map(s => s.location), 'JESUS')
     return formattedByPopulation;
-};
+}, 60);
 
 
 const format = rawCombined =>
