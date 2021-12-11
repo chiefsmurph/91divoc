@@ -1,7 +1,6 @@
 const USE_CURRENT_HIGHEST_AND_LOWEST = false;
 const NUM_PER_SUBSET = 25;
 
-const getVaccinationTotals = require('./get-vaccination-totals');
 const hasRequiredFields = require('./has-required-fields');
 
 const { mapObject, uniq } = require('underscore');
@@ -19,6 +18,14 @@ const getHighestLowest = ({
     highestVaccinatedLocations = [],
     lowestVaccinatedLocations = [],
 }) => {
+
+    // console.log(
+    //     JSON.stringify(
+    //         withVaccinationTotals,
+    //         null,
+    //         2
+    //     )
+    // )
 
     const slicedVaccinationTotals = getAggregatesForDate({
         withVaccinationTotals,
@@ -72,19 +79,17 @@ const getAggregatesForDate = ({
 
 };
 
-module.exports = async () => {
+module.exports = async (withVaccinationTotals) => {
     console.log({ USE_CURRENT_HIGHEST_AND_LOWEST});
 
-    console.log('request data...');
-
-    const withVaccinationTotals = await getVaccinationTotals();
-
-    console.log("TOTAL LOCATIONS", withVaccinationTotals.length);
+    console.log('withVaccinationTotals');
+    console.log(withVaccinationTotals);
 
 
     const allDates = uniq(withVaccinationTotals.map(t => t.data.map(t => t.date)).flat(2))
         .sort((a, b) => (new Date(a)).getTime() - (new Date(b)).getTime());
-    console.log({ allDates })
+    console.log({ allDates });
+
     // TEMP
     const mostRecentDate = allDates[allDates.length - 1];
     console.log(`NOW LETS GET THE CURRENT HIGHEST AND LOWEST LOCATIONS FOR ${mostRecentDate}`);

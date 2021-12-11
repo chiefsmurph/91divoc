@@ -1,7 +1,7 @@
-const USE_JSON = true;
+const USE_JSON = false;
 const request = require('axios');
 const fs = require('fs/promises');
-const hasRequiredFields = require('./has-required-fields');
+const hasRequiredFields = require('./common/has-required-fields');
 
 
 module.exports = async () => {

@@ -4,7 +4,8 @@ const express = require('express');
 const SocketIO = require('socket.io');
 const app = express();
 
-const getHighestLowest = require('./get-highest-lowest');
+const getHighestLowestWorld = require('./get-highest-lowest-world');
+const getHighestLowestStates = require('./get-highest-lowest-states');
 
 const server = app.listen(port, () => {
     console.log('[INFO] Listening on *:' + port);
@@ -28,7 +29,11 @@ io.on('connection', async client => {
     const userAgent = client.request.headers['user-agent'];
     console.log(`new connection: ${ip} (${userAgent}`);
 
-    client.on('getHighestLowest', async cb => {
-        cb(await getHighestLowest());
+    client.on('getHighestLowestWorld', async cb => {
+        cb(await getHighestLowestWorld());
+    });
+
+    client.on('getHighestLowestStates', async cb => {
+        cb(await getHighestLowestStates());
     });
 });
