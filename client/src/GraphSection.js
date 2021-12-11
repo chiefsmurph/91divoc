@@ -92,9 +92,20 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
                 <i>last updated: {mostRecentDate}</i><br/>
                 <span>
                     source{sources.length > 1 ? 's' : ''}:&nbsp;
-                    {sources.map(({ url, name }) => <a href={url} target="_blank">{name}</a>)}
+                    {sources.map(({ url, name }) => <a href={url} target="_blank" rel="noreferrer">{name}</a>)}
                 </span>
-                <pre><a href={jsonUrl} onClick={() => ReactGA.event({ category: 'User', action: `Downloaded ${friendlyJson}`})}>⬇ {friendlyJson}</a></pre>
+                <pre>
+                    <a 
+                        href={jsonUrl} 
+                        onClick={() => 
+                            ReactGA.event({ category: 'User', action: `Downloaded ${friendlyJson}`}
+                        )}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        ⬇ {friendlyJson}
+                    </a>
+                </pre>
             </h2>
             {
                 highestLowest && (
