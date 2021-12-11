@@ -41,17 +41,6 @@
   flex: 0 0 33.333333%;
 }
 
-@media screen and (max-width: 480px) {
-  h2 {
-    zoom: 70%;
-  }
-  table {
-    font-size: 66%;
-  }
-  .charts {
-    flex-direction: column;
-  }
-}
 
 .graph-section {
   margin: 1em 15px;
@@ -63,6 +52,14 @@
   padding: 0 1em;
 }
 
+h2 {
+  background-color: black;
+  color: white;
+  padding: 20px;
+  margin: 0;
+  position: relative;
+}
+
 h2 span {
   font-size: 16px;
 }
@@ -72,12 +69,28 @@ h2 span a {
   margin-right: 1em;
 }
 
-h2 {
-  background-color: black;
+h2 > pre {
+  position: absolute;
+  top: -5px;
+  right: 10px;
+  font-size: 70%;
+  font-family: monospace
+  /* font-variant: small-caps; */
+}
+h2 > pre a {
   color: white;
-  padding: 1em;
+  background-color: rgba(100, 100, 0, 0.6);
+  padding: 6px;
+  display: inline-block;
+  text-decoration: none;
   margin: 0;
 }
+
+h2 > pre a:hover {
+  color: black;
+  background-color: rgba(144, 238, 144, 0.8);
+}
+
 th {
   padding: 0.5em 0 0;
 }
@@ -102,5 +115,23 @@ td {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+
+@media screen and (max-width: 480px) {
+  h2 {
+    zoom: 70%;
+  }
+  table {
+    font-size: 66%;
+  }
+  .charts {
+    flex-direction: column;
+  }
+  h2 > pre a {
+    font-size: 66%;
+    padding: 10px;
+    position: relative;
   }
 }

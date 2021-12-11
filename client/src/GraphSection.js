@@ -32,7 +32,7 @@ const chartOptions = {
     maintainAspectRatio: false,
     plugins: { legend: { labels: { font: { family: 'Montserrat' }}}}
 };
-function GraphSection({ title, socket, sources = [], socketMethod }) {
+function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
     const [socketData, setSocketData] = useState(null);
     const { highestLowest, totalLocations } = socketData || {};
     useEffect(() => {
@@ -92,6 +92,7 @@ function GraphSection({ title, socket, sources = [], socketMethod }) {
                     source{sources.length > 1 ? 's' : ''}:&nbsp;
                     {sources.map(({ url, name }) => <a href={url} target="_blank">{name}</a>)}
                 </span>
+                <pre><a href={jsonUrl}>⬇ {jsonUrl}</a></pre>
             </h2>
             {
                 highestLowest && (

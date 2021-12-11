@@ -6,6 +6,8 @@ const app = express();
 
 const getHighestLowestWorld = require('./get-highest-lowest-world');
 const getHighestLowestStates = require('./get-highest-lowest-states');
+const getStateData = require('./get-state-data');
+const getWorldData = require('./get-world-data');
 
 const server = app.listen(port, () => {
     console.log('[INFO] Listening on *:' + port);
@@ -23,6 +25,9 @@ const io = SocketIO(server, {
         res.end();
     }
 });
+
+app.get('/state-data.json', (req, res) => res.json(await getStateData()));
+app.get('/world-data.json', (req, res) => res.json(await getWorldData()));
 
 
 const intervalCache = (asyncFn, refreshInterval = 60) => {

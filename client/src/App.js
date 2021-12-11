@@ -32,6 +32,7 @@ function App() {
             name: 'Our World In Data (OWID)'
           }
         ]}
+        jsonUrl="world-data.json"
       />
       <GraphSection
         socket={socket} 
@@ -51,6 +52,7 @@ function App() {
             name: 'State Population: DataUSA.io'
           }
         ]}
+        jsonUrl="state-data.json"
       />
     </div>
   );
