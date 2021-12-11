@@ -94,7 +94,7 @@ module.exports = async () => {
     // checkpoint rawCombined
     const formatted = format(rawCombined);
     const formattedByPopulation = await formatByPopulation(formatted);
-
+    console.log(formattedByPopulation.map(s => s.location), 'JESUS')
     return formattedByPopulation;
 };
 
@@ -111,13 +111,11 @@ const format = rawCombined =>
                 location: state,
                 // state_code,
                 data: vaxData.map(v => {
-                    const theDate = v.date;
                     const found = ([...outcomeData]).reverse().find(d => (new Date(d.submission_date)).getTime() < (new Date(v.date).getTime()));
-                    console.log(`theDate ${theDate} found`, found);
                     return {
                         ...v,
                         ...found
-                    }
+                    };
                 })
             }
         },
@@ -125,10 +123,11 @@ const format = rawCombined =>
 
 const formatByPopulation = async formatted => {
     const { data: populationData } = (await request('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest')).data;
-    return formatted.map(({ state, data }) => {
+    return formatted.map(({ state, location, data }) => {
         const population = (populationData.find(pop => pop.State === state) || {}).Population;
         return {
             state,
+            location,
             stateData: {
                 population
             },

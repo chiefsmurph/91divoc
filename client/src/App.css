@@ -1,3 +1,6 @@
+* {
+  box-sizing: border-box;
+}
 .App {
   text-align: center;
 }
@@ -33,6 +36,35 @@
 }
 .charts > * {
   flex: 0 0 33.333333%;
+}
+
+.graph-section {
+  margin: 1em 15px;
+  border: 1px solid black;
+  padding-bottom: 1em;
+}
+
+.charts {
+  padding: 0 1em;
+}
+
+h2 {
+  background-color: black;
+  color: white;
+  padding: 1em;
+  margin: 0;
+}
+th {
+  padding: 0.5em 0 0;
+}
+
+h2 i {
+  font-size: 70%;
+}
+
+th:first-of-type, td:first-of-type {
+  width: 50%;
+  border-right: 1px solid black;
 }
 
 @keyframes App-logo-spin {

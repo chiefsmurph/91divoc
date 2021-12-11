@@ -163,6 +163,9 @@ module.exports = async (withVaccinationTotals) => {
             lowestVaccinated_locations: lowestVaccinated_locations.join(', '),
         }));
 
-    return formatted;
+    return {
+        highestLowest: formatted,
+        totalLocations: withVaccinationTotals.length
+    };
     
 };

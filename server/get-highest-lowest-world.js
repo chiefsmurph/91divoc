@@ -1,4 +1,4 @@
-const getWorldData = require('./get-world-date');
+const getWorldData = require('./get-world-data');
 const getHighestLowest = require('./common/get-highest-lowest');
 
 module.exports = async () => {
