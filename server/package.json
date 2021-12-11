@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "PORT=3027 && pm2 start index.js --name \"91divoc-server\""
+    "start": "PORT=3027 pm2 start index.js --name \"91divoc-server\""
   },
   "dependencies": {
     "axios": "^0.24.0",
