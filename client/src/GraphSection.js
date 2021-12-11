@@ -27,7 +27,11 @@ ChartJS.register(
 );
 
 const colors = ['green', 'orange', 'blue', 'red', 'turquoise', 'magenta'];
-const chartOptions = { responsive: true, plugins: { legend: { labels: { font: { family: 'Montserrat' }}}} };
+const chartOptions = { 
+    responsive: true, 
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { font: { family: 'Montserrat' }}}}
+};
 function GraphSection({ title, socket, sources = [], socketMethod }) {
     const [socketData, setSocketData] = useState(null);
     const { highestLowest, totalLocations } = socketData || {};

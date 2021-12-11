@@ -35,8 +35,22 @@
 .charts {
   display: flex;
 }
+
 .charts > * {
+  min-height: 40vh;
   flex: 0 0 33.333333%;
+}
+
+@media screen and (max-width: 480px) {
+  h2 {
+    zoom: 70%;
+  }
+  table {
+    font-size: 66%;
+  }
+  .charts {
+    flex-direction: column;
+  }
 }
 
 .graph-section {
@@ -79,6 +93,7 @@ th:first-of-type, td:first-of-type {
 
 td {
   padding-bottom: 10px;
+  vertical-align: top;
 }
 
 @keyframes App-logo-spin {
