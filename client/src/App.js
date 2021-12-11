@@ -74,15 +74,18 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        dovic91
+        91divoc
       </header>
       {
         highestLowestData && (
-          <div className="charts">
-            <div><Line data={getChartData('cases')} options={{ responsive: true }} /></div>
-            <div><Line data={getChartData('deaths')} options={{ responsive: true }}  /></div>
-            <div><Line data={getChartData('total_vacc')} options={{ responsive: true }}  /></div>
-          </div>
+          <>
+            {JSON.stringify(highestLowestData[highestLowestData.length - 1])}
+            <div className="charts">
+              <div><Line data={getChartData('cases')} options={{ responsive: true }} /></div>
+              <div><Line data={getChartData('deaths')} options={{ responsive: true }}  /></div>
+              <div><Line data={getChartData('total_vacc')} options={{ responsive: true }}  /></div>
+            </div>
+          </>
         )
       }
       
