@@ -35,9 +35,9 @@ const chartOptions = {
 };
 function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
     const [socketData, setSocketData] = useState(null);
-    const { highestLowest, totalLocations } = socketData || {};
+    const { highestLowest, totalLocations, lastChange } = socketData || {};
     useEffect(() => {
-        socket.emit(socketMethod, data => {
+        socket.on(socketMethod, data => {
             data.highestLowest = data.highestLowest.filter(obj => Object.values(obj).every(Boolean));
             console.log({ data });
             setSocketData(data);
@@ -90,7 +90,7 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
         <div className="graph-section">
             <h2>
                 {[totalLocations, title].join(' ')}<br/>
-                <i>last updated: {mostRecentDate}</i><br/>
+                <i>last updated: {(new Date(lastChange)).toLocaleString()}</i><br/>
                 <span>
                     source{sources.length > 1 ? 's' : ''}:&nbsp;
                     {sources.map(({ url, name }) => <a href={url} target="_blank" rel="noreferrer">{name}</a>)}

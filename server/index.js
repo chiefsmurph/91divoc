@@ -32,20 +32,44 @@ app.get('/world-data.json', async (req, res) => res.json(await getWorldData()));
 
 
 const intervalCache = (asyncFn, refreshInterval = 60) => {
+    let lastChange;
     let cachedVal;
+    const watchers = [];
     const refreshCache = async () => {
         console.log('INTERVAL CACHE REFRESHING');
         await new Promise(resolve => setTimeout(resolve, 1000));
-        cachedVal = await asyncFn();
+        const newVal = await asyncFn();
+        lastChange = Date.now();
+        if (JSON.stringify(newVal) !== JSON.stringify(cachedVal)) {
+            console.log('cache value changed');
+            watchers.forEach(fn => 
+                fn({
+                    ...newVal,
+                    lastChange
+                })
+            );
+        }
+        cachedVal = newVal;
     };
     setInterval(refreshCache, refreshInterval * 1000 * 60);
     refreshCache();
-    return () => cachedVal;
+    const response = () => ({
+        /// TODO: we know its an object ... for now?
+        ...cachedVal,
+        lastChange,
+    });
+    response.onChange = fn => {
+        watchers.push(fn);
+    };
+    return response;
 };
 
 
 const cachedWorld = intervalCache(getHighestLowestWorld, 60);
+cachedWorld.onChange(newWorld => io.emit('highestLowestWorld', newWorld));
+
 const cachedStates = intervalCache(getHighestLowestStates, 110);
+cachedStates.onChange(newStates => io.emit('highestLowestStates', newStates));
 
 const increaseAndUpdateCounter = async () => {
     const file = './data/number-of-visits.json';
@@ -62,14 +86,7 @@ io.on('connection', async client => {
     const userAgent = client.request.headers['user-agent'];
     console.log(`new connection: ${ip} (${userAgent}`);
 
-
-    client.on('getHighestLowestWorld', async cb => {
-        cb(cachedWorld());
-    });
-
-    client.on('getHighestLowestStates', async cb => {
-        cb(cachedStates());
-    });
-
+    client.emit('highestLowestWorld', cachedWorld());
+    client.emit('highestLowestStates', cachedStates());
     io.emit('counter', await increaseAndUpdateCounter());
 });
