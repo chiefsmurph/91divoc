@@ -62,6 +62,19 @@ function App() {
           }
         ]}
         jsonUrl="https://chiefsmurph.com/91divoc-server/world-data.json"
+        options={
+          ({ excludeAfrica }, setOptions) => (
+            <div className="options">
+              <label>
+                <input 
+                  type="checkbox" 
+                  onClick={() => setOptions({ excludeAfrica: !excludeAfrica })} 
+                />
+                Exclude Africa
+              </label>
+            </div>
+          )
+        }
       />
       <GraphSection
         socket={socket} 

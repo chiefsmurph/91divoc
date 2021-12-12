@@ -12,7 +12,7 @@ module.exports = async () => {
     return {
         overall: await getHighestLowest({
             withVaccinationTotals,
-            numPerSubset: 12
+            // numPerSubset: 12
         })
     };
 

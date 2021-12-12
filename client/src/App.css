@@ -117,6 +117,12 @@ td {
   vertical-align: top;
 }
 
+.options {
+  font-size: 120%;
+  background-color: lightgoldenrodyellow;
+  padding: 4px 0;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

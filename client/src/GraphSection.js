@@ -33,9 +33,10 @@ const chartOptions = {
     maintainAspectRatio: false,
     plugins: { legend: { labels: { font: { family: 'Montserrat' }}}}
 };
-function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
+function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl, options = () => {} }) {
+    const [optionsData, setOptionsData] = useState({});
     const [socketData, setSocketData] = useState(null);
-    const key = 'overall';
+    const key = optionsData.excludeAfrica ? 'excludingAfrica' : 'overall';
     const { lastChange } = socketData || {};
     let { highestLowest, totalLocations } = (socketData || {})[key] || {};
 
@@ -124,6 +125,7 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
                     </a>
                 </pre>
             </h2>
+            {options(optionsData, setOptionsData)}
             {
                 highestLowest && (
                 <>

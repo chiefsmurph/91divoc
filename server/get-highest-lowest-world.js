@@ -12,12 +12,12 @@ module.exports = async () => {
     return {
         overall: await getHighestLowest({
             withVaccinationTotals,
-            numPerSubset: 44
+            // numPerSubset: 44
         }),
         excludingAfrica: await getHighestLowest({
             withVaccinationTotals: withVaccinationTotals
                 .filter(location => !JSON.stringify(location).includes('Africa')),
-            numPerSubset: 44
+            // numPerSubset: 44
         }),
     };
 
