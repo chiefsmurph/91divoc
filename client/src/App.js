@@ -10,9 +10,9 @@ import { useEffect, useState } from 'react';
 const TRACKING_ID = "UA-131761952-2";
 ReactGA.initialize(TRACKING_ID);
 
-const socketEndpoint = origin.includes('localhost') && true ? 'http://localhost:3000' : `https://chiefsmurph.com/91divoc-server`;
+const socketEndpoint = origin.includes('localhost') && false ? 'http://localhost:3000' : `https://chiefsmurph.com/`;
 const socket = socketIOClient(socketEndpoint, {
-  path: '/socket.io',
+  path: '/91divoc-server/socket.io',
   secure: true,
   transports: ['websocket']
 });
