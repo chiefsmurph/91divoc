@@ -38,6 +38,7 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
     const { highestLowest, totalLocations } = socketData || {};
     useEffect(() => {
         socket.emit(socketMethod, data => {
+            data.highestLowest = data.highestLowest.filter(obj => Object.values(obj).every(Boolean));
             console.log({ data });
             setSocketData(data);
         });
