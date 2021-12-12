@@ -81,7 +81,7 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
         lowestVaccinated_total_vaccinations_per_hundred,
         lowestVaccinated_total_deaths_per_million,
         lowestVaccinated_total_cases_per_million,
-        date: mostRecentDate
+        // date: mostRecentDate
     } = highestLowest[highestLowest.length - 1];
     const numHighest = highestVaccinated_locations.split(',').length;
     const numLowest = lowestVaccinated_locations.split(',').length;

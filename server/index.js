@@ -71,10 +71,15 @@ cachedWorld.onChange(newWorld => io.emit('highestLowestWorld', newWorld));
 const cachedStates = intervalCache(getHighestLowestStates, 110);
 cachedStates.onChange(newStates => io.emit('highestLowestStates', newStates));
 
-const increaseAndUpdateCounter = async () => {
-    const file = './data/number-of-visits.json';
+
+const file = './data/number-of-visits.json';
+const getCounter = () => {
     delete require.cache[require.resolve(file)];
     const current = require(file);
+    return current;
+};
+const increaseAndUpdateCounter = async () => {
+    const current = getCounter();
     console.log({ current})
     const next = Number(current) + 1;
     await fs.writeFile(file, JSON.stringify(next));
@@ -86,7 +91,12 @@ io.on('connection', async client => {
     const userAgent = client.request.headers['user-agent'];
     console.log(`new connection: ${ip} (${userAgent}`);
 
+    client.emit('counter', getCounter());
     client.emit('highestLowestWorld', cachedWorld());
     client.emit('highestLowestStates', cachedStates());
-    io.emit('counter', await increaseAndUpdateCounter());
+
+    client.on('increaseCounter', async () => {
+        const newCounter = await increaseAndUpdateCounter();
+        io.emit('counter', newCounter);
+    });
 });

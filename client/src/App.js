@@ -6,28 +6,39 @@ import ReactGA from 'react-ga';
 
 import socketIOClient from "socket.io-client";
 import { useEffect, useState } from 'react';
+import useLocalStorageState from 'use-local-storage-state';
 
 const TRACKING_ID = "UA-131761952-2";
 ReactGA.initialize(TRACKING_ID);
 
-const socketEndpoint = origin.includes('localhost') && false ? 'http://localhost:3000' : `https://chiefsmurph.com/`;
+const socketEndpoint = origin.includes('localhost') && true ? 'http://localhost:3000' : `https://chiefsmurph.com/`;
 const socket = socketIOClient(socketEndpoint, {
-  path: '/91divoc-server/socket.io',
+  // path: '/91divoc-server/socket.io',
+  path: '/socket.io',
   secure: true,
   transports: ['websocket']
 });
 
 function App() {
   const [numberOfVisits, setNumberofVisits] = useState(null);
+  const [counterDisabled, setCounterDisabled] = useLocalStorageState(false);
   useEffect(() => {
     socket.on('counter', setNumberofVisits);
-  }, []);
+    if (!counterDisabled) {
+      socket.emit('increaseCounter');
+    }
+  }, [counterDisabled]);
+  const headerClick = evt => {
+    if (evt.detail === 3) {
+      setCounterDisabled(!counterDisabled);
+    }
+  };
   return (
     <div className="App">
       {numberOfVisits && <span className="numberOfVisits">
         numberOfVisits: {numberOfVisits}
       </span>}
-      <header className="App-header">
+      <header className="App-header" onClick={headerClick}>
         91divoc
       </header>
       <GraphSection
