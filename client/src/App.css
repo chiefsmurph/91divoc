@@ -6,6 +6,7 @@
 body {
   background: url('https://www.myfreetextures.com/wp-content/uploads/2014/10/sky2.jpg');
   background-size: cover;
+  background-attachment: fixed;
 }
 
 .App {
