@@ -38,7 +38,17 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
     const { highestLowest, totalLocations, lastChange } = socketData || {};
     useEffect(() => {
         socket.on(socketMethod, data => {
+            // fixes glitching in states
             data.highestLowest = data.highestLowest.filter(obj => Object.values(obj).every(Boolean));
+            // cuts off beginning without v data in world
+            data.highestLowest = data.highestLowest.filter(data => {
+                const { highestVaccinated_locations = '', lowestVaccinated_locations = '' } = data;
+                const allHighest = highestVaccinated_locations.split(',');
+                const allBad = allHighest.filter(l => 
+                    lowestVaccinated_locations.split(',').includes(l)
+                );
+                return allBad.length / allHighest.length < 0.2;
+            });
             console.log({ data });
             setSocketData(data);
         });
