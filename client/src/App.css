@@ -2,6 +2,12 @@
   box-sizing: border-box;
   font-family: 'Montserrat';
 }
+
+body {
+  background: url('https://www.myfreetextures.com/wp-content/uploads/2014/10/sky2.jpg');
+  background-size: cover;
+}
+
 .App {
   text-align: center;
 }
@@ -46,6 +52,7 @@
   margin: 1em 15px;
   border: 1px solid black;
   padding-bottom: 1em;
+  background: white;
 }
 
 .charts {
