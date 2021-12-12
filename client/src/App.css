@@ -121,6 +121,11 @@ td {
   font-size: 120%;
   background-color: lightgoldenrodyellow;
   padding: 4px 0;
+  text-align: left;
+}
+
+label {
+  cursor: pointer;
 }
 
 @keyframes App-logo-spin {
