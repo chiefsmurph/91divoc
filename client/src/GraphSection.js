@@ -90,7 +90,7 @@ function GraphSection({ title, socket, sources = [], socketMethod, jsonUrl }) {
         <div className="graph-section">
             <h2>
                 {[totalLocations, title].join(' ')}<br/>
-                <i>last updated: {(new Date(lastChange)).toLocaleString()}</i><br/>
+                <i>last changed: {(new Date(lastChange)).toLocaleString()}</i><br/>
                 <span>
                     source{sources.length > 1 ? 's' : ''}:&nbsp;
                     {sources.map(({ url, name }) => <a href={url} target="_blank" rel="noreferrer">{name}</a>)}
