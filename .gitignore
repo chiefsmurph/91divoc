@@ -1,3 +1,3 @@
 node_modules
 server/data/*
-!server/data/number-of-visits.json
+server/data/number-of-visits.json
