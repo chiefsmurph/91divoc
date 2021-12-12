@@ -11,13 +11,23 @@ import useLocalStorageState from 'use-local-storage-state';
 const TRACKING_ID = "UA-131761952-2";
 ReactGA.initialize(TRACKING_ID);
 
-const socketEndpoint = origin.includes('localhost') && true ? 'http://localhost:3000' : `https://chiefsmurph.com/`;
-const socket = socketIOClient(socketEndpoint, {
-  // path: '/91divoc-server/socket.io',
-  path: '/socket.io',
-  secure: true,
-  transports: ['websocket']
-});
+const socket = origin.includes('localhost') && false
+  ? socketIOClient(
+    'http://localhost:3000',
+    {
+      path: '/socket.io',
+      transports: ['websocket'],
+    }
+  )
+  : socketIOClient(
+    'https://chiefsmurph.com',
+    {
+      path: '/91divoc-server/socket.io',
+      secure: true,
+      transports: ['websocket'],
+    }
+  );
+
 
 function App() {
   const [numberOfVisits, setNumberofVisits] = useState(null);
