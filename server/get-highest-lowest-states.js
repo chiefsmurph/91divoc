@@ -9,9 +9,11 @@ module.exports = async () => {
 
     console.log("TOTAL STATES", withVaccinationTotals.length);
 
-    return getHighestLowest({
-        withVaccinationTotals,
-        numPerSubset: 12
-    });
+    return {
+        overall: await getHighestLowest({
+            withVaccinationTotals,
+            numPerSubset: 12
+        })
+    };
 
 };

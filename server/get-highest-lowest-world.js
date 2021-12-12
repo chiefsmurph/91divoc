@@ -9,9 +9,16 @@ module.exports = async () => {
 
     console.log("TOTAL WORLD LOCATIONS", withVaccinationTotals.length);
 
-    return getHighestLowest({
-        withVaccinationTotals,
-        numPerSubset: 44
-    });
+    return {
+        overall: await getHighestLowest({
+            withVaccinationTotals,
+            numPerSubset: 44
+        }),
+        excludingAfrica: await getHighestLowest({
+            withVaccinationTotals: withVaccinationTotals
+                .filter(location => !JSON.stringify(location).includes('Africa')),
+            numPerSubset: 44
+        }),
+    };
 
 };

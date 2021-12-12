@@ -11,7 +11,7 @@ import useLocalStorageState from 'use-local-storage-state';
 const TRACKING_ID = "UA-131761952-2";
 ReactGA.initialize(TRACKING_ID);
 
-const socket = origin.includes('localhost') && false
+const socket = origin.includes('localhost') && true
   ? socketIOClient(
     'http://localhost:3000',
     {
