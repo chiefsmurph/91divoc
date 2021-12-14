@@ -82,7 +82,7 @@ const getAggregatesForDate = ({
 
 module.exports = async ({
     withVaccinationTotals,
-    numPerSubset = Math.round(withVaccinationTotals.length * 0.2)
+    numPerSubset = Math.round(withVaccinationTotals.length * 0.3)
 }) => {
     console.log({ USE_CURRENT_HIGHEST_AND_LOWEST});
 
